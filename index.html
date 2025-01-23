@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Navbar Style */
+    .navbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background-color: #333;
+      color: white;
+      padding: 15px 0;
+      z-index: 1000; /* Ensures the navbar stays on top */
+    }
+
+    .navbar ul {
+      display: flex;
+      justify-content: center;
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .navbar ul li {
+      margin: 0 20px;
+    }
+
+    .navbar ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 8px 16px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .navbar ul li a:hover {
+      background-color: #575757;
+      color: #ffbb33; /* Hover color */
+      border-radius: 5px;
+    }
+
+    /* Responsive Navbar */
+    @media (max-width: 768px) {
+      .navbar ul {
+        flex-direction: column;
+        align-items: center;
+      }
+      .navbar ul li {
+        margin: 10px 0;
+      }
+    }
+
+    /* For active page indication */
+    .navbar ul li a.active {
+      background-color: #ffbb33; /* Active page highlight color */
+      color: black;
+    }
+
+    /* Product Section Styling */
+    .product-section {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .product-section.active {
+      display: block;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .quantity-control button {
+      width: 30px;
+      height: 30px;
+      font-size: 16px;
+    }
+
+    .quantity-control input {
+      width: 50px;
+      text-align: center;
+    }
+
+    /* Other Sections Styling */
+    .form-section, .search-section, .results-section {
+      margin-top: 20px;
+    }
+
+    .form-section label, .search-section label {
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    .form-section input, .search-section input {
+      padding: 8px;
+      margin-bottom: 10px;
+      width: 200px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #575757;
+    }
+    
+.form-section {
+  background-color: #ffbb33;
+  max-width: min-content;
+  padding: 20px;
+  margin: 0 auto; /* Center horizontally */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 50vh; /* Ensure full height of the viewport */
+  box-sizing: border-box;
+
+
+    }
+
+
+
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  .container {
+    width: 90%;
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffbb33;
+  }
+  
+  h1, h2 {
+    text-align: center;
+  }
+  
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background:chocolate;
+  }
+  
+  .results-section ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .results-section li {
+    background: #f1f1f1;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+  }
+
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <ul>
+        <li><a href="#placeOrderSection" class="active">Place Order</a></li>
+        <li><a href="#orderResultsSection">Order Results</a></li>
+        <li><a href="#confirmedOrdersSection">Confirmed Orders</a></li>
+      </ul>
+    </nav>
+  </header>
+  <h1>Order System Consumer APC VVN</h1>
+
+  <!-- Place Order Section -->
+  <div class="form-section" id="placeOrderSection">
+    <h2>Place Order</h2>
+    <label for="rollNumber">Roll Number:</label>
+    <input type="text" id="rollNumber" placeholder="Enter your roll number" required>
+
+    <label for="productDropdown">Select Product Category:</label>
+    <select id="productDropdown" onchange="showSection(this.value)">
+      <option value="">-- Select Category --</option>
+      <option value="snacks">Snacks</option>
+      <option value="biscuits">Biscuits</option>
+      <option value="chocolates">Chocolates</option>
+      <option value="drinks">Drinks</option>
+    </select>
+
+    <!-- Product Sections -->
+    <div id="snacks" class="product-section">
+      <h3>Snacks</h3>
+      <div class="quantity-control">
+        <label>Chips:</label>
+        <button onclick="updateQuantity('chipsQuantity', -1)">-</button>
+        <input type="text" id="chipsQuantity" value="0" readonly>
+        <button onclick="updateQuantity('chipsQuantity', 1)">+</button>
+      </div>
+      <div class="quantity-control">
+        <label>Nuts:</label>
+        <button onclick="updateQuantity('nutsQuantity', -1)">-</button>
+        <input type="text" id="nutsQuantity" value="0" readonly>
+        <button onclick="updateQuantity('nutsQuantity', 1)">+</button>
+      </div>
+    </div>
+
+    <div id="biscuits" class="product-section">
+      <h3>Biscuits</h3>
+      <div class="quantity-control">
+        <label>Cookies:</label>
+        <button onclick="updateQuantity('cookiesQuantity', -1)">-</button>
+        <input type="text" id="cookiesQuantity" value="0" readonly>
+        <button onclick="updateQuantity('cookiesQuantity', 1)">+</button>
+      </div>
+      <div class="quantity-control">
+        <label>Crackers:</label>
+        <button onclick="updateQuantity('crackersQuantity', -1)">-</button>
+        <input type="text" id="crackersQuantity" value="0" readonly>
+        <button onclick="updateQuantity('crackersQuantity', 1)">+</button>
+      </div>
+    </div>
+
+    <div id="chocolates" class="product-section">
+      <h3>Chocolates</h3>
+      <div class="quantity-control">
+        <label>Milk Chocolate:</label>
+        <button onclick="updateQuantity('milkChocolateQuantity', -1)">-</button>
+        <input type="text" id="milkChocolateQuantity" value="0" readonly>
+        <button onclick="updateQuantity('milkChocolateQuantity', 1)">+</button>
+      </div>
+      <div class="quantity-control">
+        <label>Dark Chocolate:</label>
+        <button onclick="updateQuantity('darkChocolateQuantity', -1)">-</button>
+        <input type="text" id="darkChocolateQuantity" value="0" readonly>
+        <button onclick="updateQuantity('darkChocolateQuantity', 1)">+</button>
+      </div>
+    </div>
+
+    <div id="drinks" class="product-section">
+      <h3>Drinks</h3>
+      <div class="quantity-control">
+        <label>Cola:</label>
+        <button onclick="updateQuantity('colaQuantity', -1)">-</button>
+        <input type="text" id="colaQuantity" value="0" readonly>
+        <button onclick="updateQuantity('colaQuantity', 1)">+</button>
+      </div>
+      <div class="quantity-control">
+        <label>Juice:</label>
+        <button onclick="updateQuantity('juiceQuantity', -1)">-</button>
+        <input type="text" id="juiceQuantity" value="0" readonly>
+        <button onclick="updateQuantity('juiceQuantity', 1)">+</button>
+      </div>
+    </div>
+
+    <button onclick="placeOrder()">Place Order</button>
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="container">
+ 
+
+    <!-- Search Orders Section -->
+    <div class="search-section" id="orderResultsSection">
+      <h2>Search Orders</h2>
+      <label for="searchRoll">Roll Number:</label>
+      <input type="text" id="searchRoll" placeholder="Enter roll number">
+      <button onclick="searchOrders()">Search</button>
+    </div>
+
+    <!-- Order Results -->
+    <div class="results-section">
+      <h2>Order Results</h2>
+      <ul id="orderResults"></ul>
+      <button id="confirmButton" style="display: none;" onclick="confirmOrders()">Confirm Orders</button>
+
+      <div id="confirmedOrdersSection">
+        <h2>Confirmed Orders</h2>
+        <ul id="confirmedOrdersList"></ul>
+      </div>
+
+      <button onclick="downloadExcel()">Download Excel</button>
+      <button onclick="downloadPDF()">Download PDF</button>
+    </div>
+  </div>
+
+  <script>
+    const orders = [];
+    const confirmedOrders = [];
+
+    // Navbar Link Active Class
+    document.querySelectorAll('.navbar ul li a').forEach(link => {
+      link.addEventListener('click', function() {
+        document.querySelectorAll('.navbar ul li a').forEach(link => {
+          link.classList.remove('active');
+        });
+        this.classList.add('active');
+      });
+    });
+
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll(".product-section");
+      sections.forEach(section => section.classList.remove("active"));
+      if (sectionId) {
+        document.getElementById(sectionId).classList.add("active");
+      }
+    }
+
+    function updateQuantity(id, change) {
+      const input = document.getElementById(id);
+      const currentValue = parseInt(input.value) || 0;
+      const newValue = Math.max(currentValue + change, 0);
+      input.value = newValue;
+    }
+
+    function placeOrder() {
+      const rollNumber = document.getElementById("rollNumber").value.trim();
+      if (!rollNumber) {
+        alert("Please enter your roll number.");
+        return;
+      }
+
+      const orderItems = [
+        { item: "Chips", quantity: parseInt(document.getElementById("chipsQuantity").value) || 0 },
+        { item: "Nuts", quantity: parseInt(document.getElementById("nutsQuantity").value) || 0 },
+        { item: "Cookies", quantity: parseInt(document.getElementById("cookiesQuantity").value) || 0 },
+        { item: "Crackers", quantity: parseInt(document.getElementById("crackersQuantity").value) || 0 },
+        { item: "Milk Chocolate", quantity: parseInt(document.getElementById("milkChocolateQuantity").value) || 0 },
+        { item: "Dark Chocolate", quantity: parseInt(document.getElementById("darkChocolateQuantity").value) || 0 },
+        { item: "Cola", quantity: parseInt(document.getElementById("colaQuantity").value) || 0 },
+        { item: "Juice", quantity: parseInt(document.getElementById("juiceQuantity").value) || 0 }
+      ];
+
+      const selectedItems = orderItems.filter(({ quantity }) => quantity > 0);
+      if (selectedItems.length === 0) {
+        alert("Please select at least one item with a valid quantity.");
+        return;
+      }
+
+      orders.push({ rollNumber, items: selectedItems });
+      alert("Order placed successfully!");
+      document.querySelectorAll(".product-section input").forEach(input => (input.value = "0"));
+      showSection("");
+
+      // Show the deferred navbar once an order is placed
+      document.getElementById("deferredNavbar").style.display = "block";
+    }
+
+    function searchOrders() {
+      const searchRoll = document.getElementById("searchRoll").value.trim();
+      const resultsList = document.getElementById("orderResults");
+      const confirmButton = document.getElementById("confirmButton");
+
+      resultsList.innerHTML = "";
+      confirmButton.style.display = "none";
+
+      if (!searchRoll) {
+        alert("Please enter a roll number to search.");
+        return;
+      }
+
+      const userOrders = orders.filter(order => order.rollNumber === searchRoll);
+      if (userOrders.length > 0) {
+        userOrders.forEach(order =>
+          order.items.forEach(({ item, quantity }) => {
+            const li = document.createElement("li");
+            li.textContent = `Item: ${item}, Quantity: ${quantity}`;
+            resultsList.appendChild(li);
+          })
+        );
+        confirmButton.style.display = "block";
+        confirmButton.dataset.rollNumber = searchRoll;
+      } else {
+        const li = document.createElement("li");
+        li.textContent = "No orders found for this roll number.";
+        resultsList.appendChild(li);
+      }
+    }
+
+    function confirmOrders() {
+      const confirmButton = document.getElementById("confirmButton");
+      const rollNumber = confirmButton.dataset.rollNumber;
+
+      const index = orders.findIndex(order => order.rollNumber === rollNumber);
+      if (index !== -1) {
+        confirmedOrders.push(orders[index]);
+        orders.splice(index, 1);
+
+        alert(`Orders for roll number ${rollNumber} have been confirmed.`);
+        renderConfirmedOrders();
+      }
+
+      document.getElementById("orderResults").innerHTML = "";
+      confirmButton.style.display = "none";
+      document.getElementById("searchRoll").value = "";
+    }
+
+    function renderConfirmedOrders() {
+      const confirmedList = document.getElementById("confirmedOrdersList");
+      confirmedList.innerHTML = "";
+      confirmedOrders.forEach(order => {
+        const orderDetails = document.createElement("li");
+        orderDetails.textContent = `Roll Number: ${order.rollNumber}, Items: ${order.items.map(item => `${item.item} (${item.quantity})`).join(", ")}`;
+        confirmedList.appendChild(orderDetails);
+      });
+    }
+
+    function downloadExcel() {
+      const rows = [
+        ["Roll Number", "Item", "Quantity"],
+        ...confirmedOrders.flatMap(order =>
+          order.items.map(item => [order.rollNumber, item.item, item.quantity])
+        )
+      ];
+
+      const csvContent = rows.map(row => row.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "confirmed_orders.csv";
+      link.click();
+    }
+
+    async function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(16);
+      doc.text("Confirmed Orders", 10, 10);
+      doc.setFontSize(12);
+
+      let y = 20; // Initial vertical position
+
+      confirmedOrders.forEach((order, index) => {
+        doc.text(`Order ${index + 1}`, 10, y);
+        y += 10;
+        doc.text(`Roll Number: ${order.rollNumber}`, 10, y);
+        y += 10;
+        order.items.forEach(item => {
+          doc.text(`${item.item}: ${item.quantity}`, 10, y);
+          y += 10;
+        });
+      });
+
+      doc.save("confirmed_orders.pdf");
+    }
+  </script>
+</body>
+</html>
